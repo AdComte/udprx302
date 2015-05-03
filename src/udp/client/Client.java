@@ -8,7 +8,7 @@ import java.util.Scanner;
 import udp.ObjetConnecte;
 
 public class Client extends ObjetConnecte{
-    public static String IP_Serveur = "localhost";
+    protected static String IP_Serveur = "localhost";
     
     public Client()
     {
