@@ -15,7 +15,6 @@ public class Serveur extends ObjetConnecte implements Runnable{
     protected static final int DEBUT_PLAGE = 10000;
     protected static final int FIN_PLAGE = 11000;
     protected static DatagramPacket dp;
-    protected static DatagramSocket ds_reponse;
     
     public Serveur(int port)
     {
@@ -26,36 +25,6 @@ public class Serveur extends ObjetConnecte implements Runnable{
     {
         super(port);
         this.dp = dp;
-    }
-    
-    public void répondre(String message, InetAddress iadresse, int port) throws UnsupportedEncodingException
-    {
-        byte[] message_bin = message.getBytes("ascii");
-        DatagramPacket dp = new DatagramPacket(message_bin, message_bin.length, iadresse, port);
-        
-        try
-        {
-            ds_reponse.send(dp);
-        } catch (IOException ex)
-        {
-            System.err.println("le DatagramSocket n'a pas envoyé le DatagramPacket");
-            System.exit(1);
-        }
-    }
-    
-    public DatagramPacket recevoir(byte[] buffer) //Attention à la taille du buffer
-    {
-        DatagramPacket dp = new DatagramPacket(buffer, buffer.length);
-        try
-        {
-            ds_reponse.receive(dp);
-        } catch (IOException ex)
-        {
-            System.err.println("le DatagramSocket n'a pas reçu le DatagramPacket"
-                    + " (peut etre un dépassement de length sur le buffer)");
-            System.exit(1);
-        }
-        return dp;
     }
     
     @Override
