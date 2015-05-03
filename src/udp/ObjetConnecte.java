@@ -10,9 +10,9 @@ import java.util.ArrayList;
 
 
 public class ObjetConnecte {
-    public static int MAX = 512;
-    public static int PORT_HOST_STANDARD = 8080;
-    DatagramSocket ds;
+    public static final int MAX = 512;
+    public static final int PORT_HOST_STANDARD = 8080;
+    protected DatagramSocket ds;
 
     public ObjetConnecte() //Constructeur vide, ouvre un port disponible, utile pour l'envoie
     {
@@ -85,7 +85,7 @@ public class ObjetConnecte {
             {
                 DatagramSocket temp = new DatagramSocket(i);
                 resultat.add(i);
-                System.out.println("port " + i + " libre et ajouté à la plage");
+                //System.out.println("port " + i + " libre et ajouté à la plage");
                 temp.close();
             }
             catch(SocketException ex)

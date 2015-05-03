@@ -5,13 +5,16 @@ import java.io.UnsupportedEncodingException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import udp.ObjetConnecte;
 
 public class Serveur extends ObjetConnecte implements Runnable{
-    public static int DEBUT_PLAGE = 10000;
-    public static int FIN_PLAGE = 11000;
-    
+    private static final int DEBUT_PLAGE = 10000;
+    private static final int FIN_PLAGE = 11000;
+    private static DatagramPacket dp;
     private static DatagramSocket ds_reponse;
     
     public Serveur(int port)
@@ -50,36 +53,40 @@ public class Serveur extends ObjetConnecte implements Runnable{
     }
     
     public static void main(String[] args){
-        Serveur serveur = new Serveur(PORT_HOST_STANDARD);
         byte[] buffer = new byte[MAX];
 
         while(true){
-        try
-        {
+            Serveur serveur = new Serveur(PORT_HOST_STANDARD);
             System.out.println("Serveur en attente : " + PORT_HOST_STANDARD);
-            DatagramPacket dp = serveur.receptionner(buffer);
+            serveur.dp = serveur.receptionner(buffer);
+            serveur.ds.close();
+            Thread thread = new Thread(serveur);
+            thread.start();
+        }
+    }
+    
+    @Override
+    public void run()
+    {
+        try {
+            
             InetAddress ia = dp.getAddress();
             int port_co = dp.getPort();
             System.out.println("Connexion nouveau client " + ia.getHostAddress() + " : " + port_co);
             
-            ArrayList port_réponse = serveur.scanPortLibre(DEBUT_PLAGE, FIN_PLAGE);
+            ArrayList port_réponse = scanPortLibre(DEBUT_PLAGE, FIN_PLAGE);
             ds_reponse = new DatagramSocket( (int)port_réponse.get(0));
-            serveur.répondre("serveur prêt", ia, port_co);
-            buffer = new byte[MAX];
-            dp = serveur.recevoir(buffer);
+            répondre("serveur prêt", ia, port_co);
+            byte[] buffer = new byte[MAX];
+            dp = recevoir(buffer);
             String reçu = new String(dp.getData());
             System.out.println("Message recu : " + reçu);
-            serveur.répondre(reçu, dp.getAddress(), dp.getPort());
+            répondre(reçu, dp.getAddress(), dp.getPort());
+            ds_reponse.close();
+        } catch (SocketException ex) {
+            Logger.getLogger(Serveur.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(Serveur.class.getName()).log(Level.SEVERE, null, ex);
         }
-        catch(IOException ex) {
-            System.err.println("Problème de reception du serveur !");
-            System.exit(1);
-        }
-        }
-    }
-    
-    public void run()
-    {
-        
     }
 }
