@@ -9,7 +9,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 
 
-public class ObjetConnecte {
+public abstract class ObjetConnecte {
     public static final int MAX = 512;
     public static final int PORT_HOST_STANDARD = 8080;
     protected DatagramSocket ds;
